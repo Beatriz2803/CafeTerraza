@@ -1,0 +1,90 @@
+{# templates/reservas.html #}
+{% extends "base_cliente.html" %}
+
+{% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+/* Estética suave, no toca la lógica */
+.container-reserva {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+.card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 24px rgba(10,10,10,0.06);
+}
+.small-note { color: #6b7280; font-size: .95rem; }
+.form-row { margin-bottom: 1rem; }
+.select, input[type="date"], input[type="time"], input[type="text"], input[type="number"] {
+  width: 100%;
+  padding: .6rem .9rem;
+  border: 1px solid #e6e6e6;
+  border-radius: 10px;
+  background: #fafafa;
+}
+.btn-primary {
+  background: #a8d8ea;
+  color: #fff;
+  padding: .6rem 1rem;
+  border-radius: 9999px;
+  font-weight: 600;
+}
+.empty { color: #9ca3af; }
+</style>
+
+<div class="container-reserva">
+  <div class="card">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h2 class="text-2xl font-semibold">Reservar mesa</h2>
+        <p class="small-note">Reservá una mesa sin necesidad de hacer un pedido. Elegí fecha, hora y mesa libre.</p>
+      </div>
+      <div>
+        <a href="{{ url_for('dashboard_cliente') }}">Volver</a>
+      </div>
+    </div>
+
+    <form id="reserva-standalone-form" class="mt-4">
+      <div class="form-row">
+        <label class="block text-sm font-medium mb-1">Tu nombre</label>
+        <input id="reserva-cliente" name="cliente" type="text" placeholder="Tu nombre (opcional)" />
+      </div>
+
+      <div class="form-row">
+        <label class="block text-sm font-medium mb-1">N° de personas</label>
+        <input id="reserva-personas" name="personas" type="number" min="1" value="2" />
+      </div>
+
+      <div class="form-row grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Fecha</label>
+          <input id="reserva-fecha" name="fecha" type="date" required />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Hora</label>
+          <input id="reserva-hora" name="hora" type="time" required />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="block text-sm font-medium mb-1">Mesas libres</label>
+        <select id="reserva-mesa-select" name="mesa" required class="select">
+          <option value="">Cargando mesas...</option>
+        </select>
+        <p id="sin-mesas" class="empty mt-2 hidden">No hay mesas libres en este momento.</p>
+      </div>
+
+      <div class="form-row flex gap-3">
+        <button id="reserva-submit" class="btn-primary" type="submit">Confirmar reserva</button>
+        <button id="reserva-cancel" type="button" class="btn-primary" style="background:#f3f4f6;color:#111">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/script-reserva.js') }}"></script>
+{% endblock %}

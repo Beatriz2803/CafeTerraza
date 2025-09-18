@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-box">
+        <h2>Bienvenido</h2>
+        <p>Inicia sesión para gestionar el café.</p>
+        
+        <form id="login-form">
+    <div class="form-group">
+        <label for="username">Usuario:</label>
+        <input type="text" id="username" name="username" autocomplete="username" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required>
+    </div>
+    <button type="submit">Entrar</button>
+</form>
+
+<hr>
+<!-- 🔹 Botón de acceso directo para clientes -->
+<button id="cliente-login">Entrar como Cliente</button>
+ </div>
+</div>
+<script>
+document.getElementById("cliente-login").addEventListener("click", async () => {
+    let res = await fetch("/api/login_cliente", { method: "POST" });
+    let data = await res.json();
+    if (data.success && data.redirect) {
+        window.location.href = data.redirect;   // 👈 usa la ruta enviada por el backend
+    } else {
+        alert(data.message || "No se pudo iniciar como cliente.");
+    }
+});
+</script>
+
+{% endblock %}

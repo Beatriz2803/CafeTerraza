@@ -1,0 +1,784 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+:root {
+    --bg-dark: #121212;
+    --bg-dark-alt: #1e1e1e;
+    --text-light: #e0e0e0;
+    --accent-red: #e53935; /* Primary accent color */
+    --accent-red-dark: #c62828;
+    --gray-medium: #2a2a2a;
+    --gray-light: #333;
+    --gray-text-light: #aaa;
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+    --hover-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
+    --success-green: #4CAF50;
+    --danger-red: #f44336;
+    --warning-orange: #ff9800;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* --- Header --- */
+header {
+    background-color: var(--bg-dark-alt);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid var(--gray-medium); /* Subtle line */
+}
+
+header .logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent-red);
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.7); /* Slightly stronger shadow */
+    letter-spacing: 0.5px;
+}
+
+header nav a {
+    color: var(--text-light);
+    text-decoration: none;
+    margin-left: 25px; /* Increased spacing */
+    font-weight: 600;
+    padding: 10px 15px; /* Slightly larger clickable area */
+    border-radius: 8px;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease; /* Added transform */
+    position: relative; /* For underline effect */
+}
+
+header nav a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    background: var(--accent-red);
+    left: 50%;
+    bottom: 5px;
+    transform: translateX(-50%);
+    transition: width 0.3s ease;
+}
+
+header nav a:hover::after,
+header nav a.active::after {
+    width: calc(100% - 20px); /* Adjust width for padding */
+}
+
+header nav a:hover {
+    background-color: var(--gray-medium); /* Darker hover for subtle effect */
+    color: var(--text-light);
+    transform: translateY(-2px); /* Slight lift on hover */
+}
+
+header nav a.active {
+    background-color: var(--accent-red);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(229, 57, 53, 0.4); /* Shadow for active state */
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#logout-btn {
+    background-color: var(--gray-light);
+    color: var(--text-light);
+    border: none;
+    padding: 8px 18px; /* Slightly wider */
+    border-radius: 20px; /* Pill shape */
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#logout-btn:hover {
+    background-color: var(--accent-red);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+/* --- General Container & Buttons --- */
+.container {
+    max-width: 1300px; /* Slightly wider */
+    margin: 2rem auto;
+    padding: 0 1.5rem; /* Increased padding */
+}
+
+.btn { /* General button style */
+    background-color: var(--accent-red);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 15px; /* Add some spacing when used below elements */
+}
+
+.btn:hover {
+    background-color: var(--accent-red-dark);
+    transform: translateY(-2px);
+}
+
+.btn.cancelar { /* Specific style for cancel buttons */
+    background-color: var(--gray-light);
+}
+
+.btn.cancelar:hover {
+    background-color: #555;
+}
+
+
+/* --- Login Page Styles --- */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 80px); /* Adjust height for header */
+}
+
+.login-box {
+    background-color: var(--bg-dark-alt);
+    padding: 3.5rem 3rem; /* More vertical padding */
+    border-radius: 12px; /* Slightly more rounded */
+    box-shadow: var(--card-shadow);
+    width: 100%;
+    max-width: 450px; /* Slightly wider login box */
+    text-align: center;
+    border: 1px solid var(--gray-medium); /* Subtle border */
+}
+
+.login-box h2 {
+    color: var(--accent-red);
+    margin-bottom: 1.2rem;
+    font-size: 2.2rem; /* Slightly larger */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.login-box p {
+    color: var(--gray-text-light);
+    margin-bottom: 2.5rem;
+    font-size: 0.95rem;
+}
+
+.form-group {
+    text-align: left;
+    margin-bottom: 1.8rem; /* More spacing between form groups */
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px; /* More spacing below label */
+    font-weight: 600;
+    color: var(--text-light);
+    font-size: 0.95rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px; /* More padding in inputs */
+    border: 1px solid var(--gray-light);
+    background-color: var(--gray-medium);
+    color: var(--text-light);
+    border-radius: 8px; /* Slightly more rounded inputs */
+    box-sizing: border-box;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--accent-red);
+    box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.3); /* Focus ring */
+}
+
+.login-box button {
+    width: 100%;
+    padding: 14px; /* More padding for button */
+    font-size: 1.2rem; /* Larger font */
+    border-radius: 8px; /* More rounded button */
+}
+
+.note {
+    font-size: 0.85rem;
+    color: var(--gray-text-light);
+    margin-top: 2rem;
+}
+
+/* --- Dashboard Styles --- */
+.dashboard-container {
+    padding: 2.5rem; /* More overall padding */
+}
+
+.welcome-message {
+    color: var(--accent-red);
+    font-size: 3rem; /* Larger welcome message */
+    text-align: center;
+    margin-bottom: 2.5rem;
+    text-shadow: 1px 1px 5px rgba(0,0,0,0.7);
+}
+
+.welcome-module {
+    text-align: center;
+    padding: 3rem; /* More padding */
+    border-radius: 15px; /* Slightly more rounded */
+    background: linear-gradient(145deg, var(--bg-dark-alt), #2c2c2c); /* Subtle gradient */
+    border: 1px solid var(--gray-medium);
+}
+
+.welcome-module h2 {
+    color: var(--text-light);
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+}
+
+.welcome-module p {
+    color: var(--gray-text-light);
+    font-size: 1.1rem;
+    margin-bottom: 2.5rem;
+}
+
+.dashboard-cards {
+    display: grid; /* Use grid for better control */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid */
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.card {
+    background-color: var(--bg-dark-alt);
+    padding: 2.5rem; /* More padding */
+    border-radius: 12px; /* Slightly more rounded */
+    box-shadow: var(--card-shadow);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    text-align: center;
+    border: 1px solid var(--gray-medium); /* Subtle border */
+}
+
+.card:hover {
+    transform: translateY(-12px); /* More pronounced lift */
+    box-shadow: var(--hover-shadow);
+    background-color: #252525; /* Slightly lighter on hover */
+}
+
+.card h3 {
+    color: var(--accent-red);
+    margin-top: 0;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    letter-spacing: 0.5px;
+}
+
+.card p {
+    color: var(--gray-text-light);
+    font-size: 0.95rem;
+}
+
+.module {
+    background-color: var(--bg-dark-alt);
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 2rem;
+    border: 1px solid var(--gray-medium);
+}
+
+.module .btn { /* Apply general button style to module buttons */
+    margin-top: 0; /* Override margin-top for these specific buttons */
+    margin-bottom: 20px;
+    display: inline-block; /* Allow multiple buttons on one line if needed */
+    margin-right: 15px; /* Spacing between buttons */
+}
+
+.hidden {
+    display: none;
+}
+
+/* --- Module-specific styles --- */
+.module h2 {
+    color: var(--accent-red);
+    border-bottom: 2px solid var(--gray-light); /* Darker, more distinct line */
+    padding-bottom: 15px; /* More spacing below heading */
+    margin-bottom: 30px; /* More spacing below line */
+    font-size: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Presentation Module */
+#presentacion-module .presentacion {
+    display: flex;
+    flex-direction: column; /* Stack image and text on small screens */
+    align-items: center;
+    gap: 30px;
+}
+
+#presentacion-module .presentacion-img {
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease;
+}
+
+#presentacion-module .presentacion-img:hover {
+    transform: scale(1.02);
+}
+
+#presentacion-module .presentacion p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-light);
+    max-width: 800px;
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    #presentacion-module .presentacion {
+        flex-direction: row; /* Side-by-side on larger screens */
+        text-align: left;
+    }
+    #presentacion-module .presentacion-img {
+        max-width: 40%;
+    }
+    #presentacion-module .presentacion p {
+        text-align: left;
+    }
+}
+
+
+.module table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem; /* More spacing */
+    border-radius: 8px; /* Rounded corners for the whole table */
+    overflow: hidden; /* Ensures rounded corners apply to content */
+}
+
+.module table th, .module table td {
+    text-align: left;
+    padding: 15px; /* More padding in table cells */
+    border-bottom: 1px solid #3a3a3a; /* Slightly lighter border for contrast */
+}
+
+.module table th {
+    background-color: var(--gray-medium);
+    color: var(--accent-red);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: sticky; /* Make headers sticky for long tables */
+    top: 0;
+    z-index: 1;
+}
+
+.module table tr:nth-child(even) {
+    background-color: #212121; /* Zebra striping for readability */
+}
+
+.module table tr:hover {
+    background-color: #2c2c2c; /* Subtle hover effect on rows */
+}
+
+/* --- Mesas Module --- */
+.mesas-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Larger minimum width */
+    gap: 20px; /* Increased gap */
+    margin-top: 30px;
+    padding: 10px;
+}
+
+.mesa {
+    width: 100px; /* Explicit width to match minmax */
+    height: 100px; /* Make them square */
+    border-radius: 15px; /* More rounded */
+    display: flex;
+    flex-direction: column; /* Allow text and potential icons */
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    font-size: 1.8rem; /* Larger number */
+    color: #fff;
+    position: relative;
+    overflow: hidden; /* Hide overflow for subtle effects */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.mesa::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.1); /* Subtle overlay */
+    z-index: 0;
+    transition: background 0.3s ease;
+}
+
+.mesa:hover {
+    transform: scale(1.05); /* Slightly less aggressive scale */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.mesa.libre {
+    background-color: var(--success-green);
+}
+
+.mesa.ocupada {
+    background-color: var(--danger-red);
+}
+
+.mesa.reservada {
+    background-color: var(--warning-orange);
+}
+
+.mesa.reservada::after {
+    content: 'Reservada'; /* Add text for reserved status */
+    position: absolute;
+    bottom: 5px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 2px 8px;
+    border-radius: 5px;
+}
+
+
+/* --- Modal --- */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7); /* Darker overlay */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000; /* Ensure it's on top */
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: var(--bg-dark-alt); /* Darker modal background */
+    color: var(--text-light);
+    padding: 30px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 450px; /* Increased max width */
+    box-shadow: 0 8px 30px rgba(0,0,0,0.8);
+    border: 1px solid var(--gray-medium);
+    animation: fadeInScale 0.3s ease-out; /* Add animation */
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-content h3 {
+    color: var(--accent-red);
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    text-align: center;
+}
+
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Spacing between form elements */
+}
+
+.modal-content label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--text-light);
+}
+
+.modal-content input[type="text"],
+.modal-content input[type="number"],
+.modal-content input[type="date"],
+.modal-content input[type="time"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--gray-light);
+    background-color: var(--gray-medium);
+    color: var(--text-light);
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.modal-content input:focus {
+    outline: none;
+    border-color: var(--accent-red);
+    box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.3);
+}
+
+.modal-content .btn {
+    margin-top: 20px;
+    width: auto; /* Allow buttons to size to content */
+    align-self: flex-end; /* Align to the right */
+}
+
+.modal-content .btn:first-of-type { /* For the save button */
+    margin-right: 10px; /* Spacing between buttons */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        padding: 1rem;
+    }
+    header nav {
+        margin-top: 15px;
+    }
+    header nav a {
+        margin: 0 10px;
+        padding: 6px 10px;
+    }
+    .welcome-message {
+        font-size: 2rem;
+    }
+    .dashboard-cards {
+        grid-template-columns: 1fr; /* Stack cards on small screens */
+    }
+    .card {
+        width: auto;
+    }
+    .module {
+        padding: 1.5rem;
+    }
+    .module h2 {
+        font-size: 1.5rem;
+    }
+    .module table th, .module table td {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+    .mesas-container {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+        gap: 10px;
+    }
+    .mesa {
+        width: 70px;
+        height: 70px;
+        font-size: 1.4rem;
+    }
+    .modal-content {
+        width: 90%;
+        padding: 20px;
+    }
+    .modal-content .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+/* ===== Mejoras visuales para Mesas y Panel de Reservas ===== */
+
+/* Ajusta la rejilla: cajas más grandes y espaciado cómodo */
+.mesas-container {
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* aumenta tamaño mínimo */
+  gap: 24px; /* más respiración */
+}
+
+/* Tamaños y aspecto general de cada mesa */
+.mesa {
+  min-height: 160px;           /* cajas más grandes para claridad */
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+  padding: 12px;
+  text-align: center;
+  user-select: none;
+  overflow: hidden;
+}
+
+/* Número grande y legible */
+.mesa-number {
+  font-size: 2.8rem;      /* más legible */
+  font-weight: 800;
+  line-height: 1;
+  z-index: 2;
+  color: #ffffff;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.35);
+}
+
+/* Hover visual: levantar la mesa para señalar interactividad */
+.mesa:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+}
+
+/* Más contraste en estados (usando variables existentes) */
+.mesa.libre {
+  background: var(--success-green);
+  color: #062a16;
+}
+.mesa.reservada {
+  background: var(--warning-orange);
+  color: #1a1200;
+}
+.mesa.ocupada {
+  background: var(--danger-red);
+  color: #fff;
+}
+
+/* Badge de reserva (más grande y legible) */
+.mesa-reserva-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 0.98rem;
+  font-weight: 700;
+  backdrop-filter: blur(4px);
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+  max-width: 85%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* cuando es reservada, badge más visible */
+.mesa.reservada .mesa-reserva-badge {
+  background: rgba(0,0,0,0.16);
+  color: #fff;
+}
+
+/* Texto explicativo pequeño bajo el número (opcional) */
+.mesa .mesa-sub {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.95);
+  z-index: 2;
+  text-align: center;
+}
+
+/* ===== Panel de Reservas laterales ===== */
+.reservas-panel {
+  margin-top: 20px;
+  max-width: 380px;
+}
+
+.reservas-panel h3 {
+  font-size: 1.15rem;
+  margin-bottom: 10px;
+  color: var(--text-light);
+}
+
+/* Lista como tarjetas claras */
+#reservas-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+#reservas-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #ffffff10; /* sutil sobre fondo oscuro */
+  border: 1px solid rgba(255,255,255,0.03);
+  color: var(--text-light);
+  margin-bottom: 10px;
+  transition: background .12s ease, transform .12s ease;
+}
+
+/* información y botones dentro de cada reserva */
+#reservas-list li .res-info { flex: 1; display: flex; flex-direction: column; gap: 4px; text-align: left; }
+#reservas-list li .res-info .r-name { font-weight: 700; font-size: 1rem; color: var(--text-light); }
+#reservas-list li .res-info .r-meta { font-size: 0.95rem; color: var(--gray-text-light); }
+
+/* acciones (botones) */
+#reservas-list li .res-actions { display:flex; gap:8px; align-items:center; }
+#reservas-list li button {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+#reservas-list li button.confirm {
+  background: var(--success-green);
+  color: #04230f;
+}
+#reservas-list li button.cancel {
+  background: rgba(255,255,255,0.06);
+  color: var(--text-light);
+}
+
+/* Hover ligero en tarjetas de reserva */
+#reservas-list li:hover {
+  transform: translateY(-3px);
+  background: rgba(255,255,255,0.03);
+}
+
+/* Responsive: reducir tamaño en pantallas pequeñas */
+@media (max-width: 768px) {
+  .mesas-container { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+  .mesa { min-height: 110px; padding: 8px; }
+  .mesa-number { font-size: 1.8rem; }
+  .mesa-reserva-badge { font-size: 0.85rem; padding: 5px 8px; }
+  .reservas-panel { max-width: 100%; }
+}
+
+
+@media (max-width: 480px) {
+    .login-box {
+        padding: 2rem 1.5rem;
+    }
+    .login-box h2 {
+        font-size: 1.8rem;
+    }
+    .dashboard-container {
+        padding: 1rem;
+    }
+}

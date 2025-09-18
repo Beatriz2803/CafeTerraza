@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Café Terraza - Gestión</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="logo">☕ Café Terraza</div>
+        {% if current_user.is_authenticated %}
+        <nav>
+            <a href="{{ url_for('dashboard_page') }}" class="nav-link">Inicio</a>
+            <a href="#" class="nav-link" data-module="menu">Menú</a>
+            <a href="#" class="nav-link" data-module="pedidos">Pedidos</a>
+            <a href="#" class="nav-link" data-module="mesas">Mesas</a>
+
+        </nav>
+        <div class="user-info">
+            <span>¡Hola, {{ current_user.username }}!</span>
+            <button id="logout-btn">Cerrar Sesión</button>
+        </div>
+        {% endif %}
+    </header>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+</html>

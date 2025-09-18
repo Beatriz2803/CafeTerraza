@@ -1,0 +1,218 @@
+{% extends "base_cliente.html" %}
+
+{% block content %}
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(to right, #fdfcfb, #e2d1c3); /* Fondo suave beige */
+  }
+  .menu-card {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .menu-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.08);
+  }
+  .btn {
+    background: #74dec6;
+    color: #1a2c23;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    transition: all 0.2s ease;
+  }
+  .btn:hover {
+    background: #74dec6;
+    transform: translateY(-2px);
+  }
+    
+/* --- Estilos Vista Cliente --- */
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(to right, #fdfcfb, #deeafc); /* Beige → Celeste suave */
+  color: #333;
+}
+
+/* Módulos */
+.module {
+  background: rgba(254, 255, 213, 0.7);
+  border-radius: 1.5rem;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+  padding: 2rem;
+}
+
+/* Títulos de módulos */
+.module h2 {
+  color: #444; /* gris oscuro en lugar de rojo */
+  font-weight: 700;
+  border-bottom: 2px solid #e4e685;
+  padding-bottom: .75rem;
+  margin-bottom: 1.5rem;
+  text-transform: none;
+}
+
+/* Cards del menú */
+.menu-card {
+  background: #fafafa;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.menu-card img {
+  border-radius: 0.75rem;
+  margin-bottom: 1rem;
+  max-height: 140px;
+  object-fit: cover;
+}
+
+.menu-card h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: .25rem;
+}
+
+.menu-card p {
+  color: #666;
+  font-weight: 500;
+  margin-bottom: .75rem;
+}
+
+.menu-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+}
+
+/* Botón agregar */
+.menu-card button {
+  background: #e7d878;
+  color: #9d3e00;
+  font-weight: 600;
+  padding: .5rem 1.25rem;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+}
+.menu-card button:hover {
+  background: #89cff0;
+  transform: translateY(-2px);
+}
+
+/* Carrito */
+#cart-items li {
+  background: #f9f9f9;
+  padding: .75rem 1rem;
+  border-radius: .75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: .95rem;
+  color: #444;
+}
+
+#cart-items li button {
+  background: none;
+  border: none;
+  color: #f87171; /* rojo suave */
+  font-size: 1rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+#cart-items li button:hover {
+  color: #dc2626;
+}
+
+</style>
+
+<div class="dashboard-container min-h-screen p-8">
+  <div class="flex justify-between items-center bg-gray-900 text-white px-6 py-3 rounded-xl mb-6">
+  <h2 class="text-xl font-semibold">Café Terraza</h2>
+</div>
+
+  <!-- 🔹 Presentación / Bienvenida -->
+  <div class="bg-white rounded-2xl shadow-lg p-8 mb-10 flex flex-col md:flex-row items-center gap-6">
+    <img src="https://placehold.co/150x150/a8d8ea/fff?text=☕" alt="Logo" class="rounded-full shadow-md">
+    <div>
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-800">Bienvenido, {{ user.username }} 👋</h1>
+      <p class="text-lg text-gray-600 mt-2">Elige tus productos y disfruta de la experiencia Café Terraza ✨</p>
+    </div>
+  </div>
+
+  <!-- 🔹 Secciones Menú + Carrito -->
+  <div class="grid md:grid-cols-2 gap-10">
+    
+    <!-- Menú -->
+    <div class="module bg-white rounded-2xl shadow-lg p-8">
+      <h2 class="text-2xl font-semibold text-gray-700 mb-6">Menú de Productos</h2>
+      <div id="menu-container" class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2">
+        <!-- Los productos se cargan dinámicamente -->
+      </div>
+    </div>
+
+    <!-- Carrito -->
+    <div class="module bg-white rounded-2xl shadow-lg p-8">
+      <h2 class="text-2xl font-semibold text-gray-700 mb-6">Tu Pedido</h2>
+      <form id="cliente-pedido-form" class="space-y-6">
+        
+        <!-- Nombre -->
+        <div>
+          <label for="cliente-nombre" class="block text-gray-600 font-medium mb-1">Tu nombre:</label>
+          <input type="text" id="cliente-nombre" name="nombre" placeholder="Tu nombre"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-300">
+        </div>
+
+        <!-- Productos seleccionados -->
+        <h4 class="text-lg font-medium text-gray-700 mt-6">Productos seleccionados:</h4>
+        <ul id="cart-items" class="space-y-3"></ul>
+
+        <!-- Total -->
+        <p class="text-right text-2xl font-bold text-gray-800 pt-4 border-t">
+          Total: $<span id="total-price">0.00</span>
+        </p>
+
+        <!-- Selección mesa -->
+                 <div id="mesa-select-container">
+                    <label for="mesa-select">Selecciona el modo de entrega</label>
+                    <select id="mesa-select">
+                        <option value="">-- Selecciona --</option>
+                        <option value="para_llevar">Para llevar</option>
+                        <option value="delivery">Delivery</option>
+                    </select>
+                </div>
+                
+                <!-- 🔹 CAMBIO: ahora el botón tiene id "confirm-order-btn" -->
+                <button id="confirm-order-btn" type="button" class="w-full btn mt-6">Confirmar Pedido</button>
+        
+<div class="flex justify-center mt-6">
+  <a href="{{ url_for('reservas_page') }}"
+     class="px-8 py-3 bg-gradient-to-r from-pink-200 via-purple-200 to-blue-200 
+            hover:from-pink-300 hover:via-purple-300 hover:to-blue-300
+            text-gray-800 font-semibold text-lg rounded-2xl shadow-lg
+            transition-all transform hover:scale-105 hover:shadow-xl">
+      Reservar Mesa 
+  </a>
+</div>
+
+            </form>
+        </div>
+    </div>
+</div>
+    
+
+
+<script src="{{ url_for('static', filename='js/script-cliente.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1 class="welcome-message">¡Bienvenido a CAFE TERRAZA</h1>
+    
+    <div id="content-modules">
+        
+        <div id="presentacion-module" class="module hidden">
+            <h2>Presentación</h2>
+            <div class="presentacion">
+                <img src="{{ url_for('static', filename='img/cafeteria.jpg') }}" alt="Café Terraza" class="presentacion-img">
+                <p>☕ Bienvenido a <strong>Café Terraza</strong>, un espacio único para disfrutar del mejor café y repostería artesanal. 
+                    Aquí podrás gestionar todo lo necesario para brindar un excelente servicio a nuestros clientes.</p>
+            </div>
+        </div>
+
+        <div id="menu-module" class="module hidden">
+            <h2>Gestión de Menú</h2>
+            <button id="agregar-producto-btn" class="btn">Agregar Producto</button>
+            <div id="tabla-menu-container"></div>
+
+            <!-- Modal: Nuevo/Editar Producto -->
+            <div id="modal-producto" class="modal hidden">
+                <div class="modal-content">
+                    <h3 id="modal-producto-titulo">Nuevo Producto</h3>
+                    <form id="producto-form">
+                        <input type="hidden" id="producto-id">
+
+                        <label for="producto-nombre">Nombre:</label>
+                        <input type="text" id="producto-nombre" name="nombre" required>
+
+                        <label for="producto-categoria">Categoría:</label>
+                        <input type="text" id="producto-categoria" name="categoria">
+
+                        <label for="producto-precio">Precio:</label>
+                        <input type="number" id="producto-precio" name="precio" step="0.01" required>
+
+                        <div class="modal-actions">
+                            <button type="submit" class="btn">Guardar</button>
+                            <button type="button" id="cerrar-modal-producto" class="btn cancelar">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="pedidos-module" class="module hidden">
+            <h2>Gestión de Pedidos</h2>
+            <button id="crear-pedido-btn" class="btn">Crear Nuevo Pedido</button>
+            <div id="tabla-pedidos-container"></div>
+
+            <div id="modal-nuevo-pedido" class="modal hidden">
+                <div class="modal-content">
+                    <h3>Crear Nuevo Pedido</h3>
+                    <form id="nuevo-pedido-form">
+                        <label for="cliente-pedido">Cliente:</label>
+                        <input type="text" id="cliente-pedido" name="cliente" placeholder="Nombre del cliente (opcional)">
+
+                        <div class="add-item-container">
+                            <label for="menu-productos">Añadir Producto:</label>
+                            <select id="menu-productos"></select>
+                            <button type="button" id="add-producto-pedido-btn" class="btn btn-small">Añadir</button>
+                        </div>
+
+                        <h4>Items del Pedido:</h4>
+                        <ul id="pedido-items-list">
+                            </ul>
+
+                        <p class="total-pedido"><strong>Total: $<span id="pedido-total">0.00</span></strong></p>
+
+                        <div class="modal-actions">
+                            <button type="submit" class="btn">Guardar Pedido</button>
+                            <button type="button" id="cerrar-modal-pedido" class="btn cancelar">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            </div>
+
+        
+        <div id="mesas-module" class="module hidden">
+            <h2>Gestión de Mesas</h2>
+            <div class="mesas-container"></div>
+            <div class="reservas-panel" style="margin-top:20px;">
+              <h3 style="margin-bottom:8px;">Reservas activas</h3>
+              <ul id="reservas-list" style="list-style:none;padding:0;margin:0;">
+                <li class="empty">Cargando reservas...</li>
+              </ul>
+            </div>
+        </div>
+            
+        <div id="modal-reserva" class="modal hidden">
+            <div class="modal-content">
+                <h3>Reservar Mesa <span id="mesa-numero"></span></h3>
+                <form id="reserva-form">
+                    <label for="cliente">Cliente:</label>
+                    <input type="text" id="cliente" name="cliente" required>
+                    <label for="personas">N° Personas:</label>
+                    <input type="number" id="personas" name="personas" min="1" required>
+                    <label for="fecha">Fecha:</label>
+                    <input type="date" id="fecha" name="fecha" required>
+                    <label for="hora">Hora:</label>
+                    <input type="time" id="hora" name="hora" required>
+                    <button type="submit" class="btn">Guardar Reserva</button>
+                    <button type="button" id="cerrar-modal" class="btn cancelar">Cancelar</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="facturacion-module" class="module hidden">
+            <h2>Facturación</h2>
+            <button id="nueva-factura-btn" class="btn">Generar Factura</button>
+            <div id="tabla-facturas-container"></div>
+        </div>
+    </div>
+
+    <div id="welcome-message" class="module welcome-module">
+        <h2>Panel de Control</h2>
+        <p>Gestión</p>
+        <div class="dashboard-cards">
+            <div class="card" data-module="presentacion">
+                <h3>Presentación</h3>
+                <p>Ver presentación de la cafetería.</p>
+            </div>
+            <div class="card" data-module="menu">
+                <h3>Menú</h3>
+                <p>Ver y gestionar productos.</p>
+            </div>
+            <div class="card" data-module="pedidos">
+                <h3>Pedidos</h3>
+                <p>Ver y gestionar pedidos.</p>
+            </div>
+            <div class="card" data-module="mesas">
+                <h3>Mesas</h3>
+                <p>Ver y gestionar las mesas del local.</p>
+            </div>
+            <div class="card" data-module="facturacion">
+                <h3>Facturación</h3>
+                <p>Gestionar pagos y facturas.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+{% endblock %}
