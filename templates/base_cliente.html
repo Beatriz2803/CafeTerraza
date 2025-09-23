@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Café Terraza - Cliente</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to right, #fdfcfb, #deeafc); /* Beige → Celeste suave */
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <!-- Encabezado Cliente -->
+    <header class="bg-white shadow-md px-8 py-4 flex justify-between items-center rounded-b-2xl">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl">☕</span>
+            <h1 class="text-xl font-bold text-gray-700 tracking-wide">Café Terraza</h1>
+        </div>
+
+        <!-- Navegación -->
+        <nav class="flex items-center gap-6">
+            <a href="{{ url_for('dashboard_cliente') }}" 
+               class="text-gray-700 font-medium hover:text-blue-500 transition">Inicio</a>
+
+            <a href="{{ url_for('reservas_page') }}" 
+               class="text-gray-700 font-medium hover:text-blue-500 transition">Reservar mesa</a>
+
+            <a href="{{ url_for('logout') }}" 
+               class="bg-blue-200 hover:bg-blue-300 text-gray-800 font-semibold px-4 py-2 rounded-lg shadow-sm transition">
+               Cerrar sesión
+            </a>
+        </nav>
+    </header>
+
+    <!-- Contenido dinámico -->
+    <main class="container mx-auto p-6">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

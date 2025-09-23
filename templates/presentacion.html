@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="presentacion-container">
+    <h1>☕ Bienvenido a Café Terraza</h1>
+    <p>Tu lugar favorito para disfrutar café, postres y momentos únicos.</p>
+    <img src="{{ url_for('static', filename='img/cafe-banner.jpg') }}" alt="Café Central" class="banner">
+    <a href="{{ url_for('login_page') }}" class="btn">Ingresar al Sistema</a>
+</div>
+{% endblock %}
