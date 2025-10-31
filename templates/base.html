@@ -4,32 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Café Terraza - Gestión</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css', v=9999) }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <header>
-        <div class="logo">☕ Café Terraza</div>
-        {% if current_user.is_authenticated %}
-        <nav>
-            <a href="{{ url_for('dashboard_page') }}" class="nav-link">Inicio</a>
-            <a href="#" class="nav-link" data-module="menu">Menú</a>
-            <a href="#" class="nav-link" data-module="pedidos">Pedidos</a>
-            <a href="#" class="nav-link" data-module="mesas">Mesas</a>
+    <header class="header-elegante">
+      <div class="logo">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Café Terraza" class="logo-img">
+        <span class="logo-text">Café Terraza</span>
+      </div>
 
-        </nav>
-        <div class="user-info">
-            <span>¡Hola, {{ current_user.username }}!</span>
-            <button id="logout-btn">Cerrar Sesión</button>
-        </div>
-        {% endif %}
+      {% if current_user.is_authenticated %}
+      <nav>
+          <a href="#" class="nav-link" data-module="welcome">Inicio</a>
+          <a href="#" class="nav-link" data-module="menu">Menú</a>
+          <a href="#" class="nav-link" data-module="pedidos">Pedidos</a>
+          <a href="#" class="nav-link" data-module="mesas">Mesas</a>
+      </nav>    
+
+      <div class="user-info">
+          <span class="saludo">¡Hola, {{ current_user.username }}!</span>
+          <button id="logout-btn" title="Cerrar sesión">
+              <i class="fas fa-sign-out-alt"></i>
+          </button>
+      </div>
+      {% endif %}
     </header>
 
-    <main class="container">
-        {% block content %}{% endblock %}
-    </main>
 
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<main class="container">
+    {% block content %}{% endblock %}
+</main>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 </body>
 </html>

@@ -1,86 +1,206 @@
-{# templates/reservas.html #}
 {% extends "base_cliente.html" %}
 
 {% block content %}
-<script src="https://cdn.tailwindcss.com"></script>
-
 <style>
+  /* Definición de variables CSS para la paleta de colores */
+:root {
+    --color-strawberry: #E5ADA8;
+    --color-vanilla: #E5E0D8;
+    --color-caramel: #D0A77B;
+    --color-chocolate: #725C3F;
+    --color-lemon: #EFE8D8;
+    --color-mint: #D8D7B2;
+    --color-text-dark: #333333;
+    --color-text-light: #6b7280;
+}
 
-.container-reserva {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 1rem;
+/* --- ESTILOS PARA EL CUERPO DE LA PÁGINA --- */
+body {
+    margin: 0; /* Asegúrate de que no haya márgenes por defecto */
+    padding: 0; /* Asegúrate de que no haya padding por defecto */
+    
+    /* 1. Capa de color semitransparente + tu imagen de fondo */
+    background-image:
+        linear-gradient(rgba(229, 224, 216, 0.85), rgba(229, 224, 216, 0.85)),
+        url("{{ url_for('static', filename='images/fondo_login.png') }}"); /* Asegúrate de que esta ruta sea correcta */
+
+    /* 2. Propiedades para que la imagen se ajuste bien */
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed; /* Mantiene la imagen fija al hacer scroll */
+    
+    /* Opcional: Color de respaldo si la imagen no carga */
+    background-color: var(--color-vanilla);
 }
-.card {
-  background: #fff;
-  border-radius: 14px;
-  padding: 1.5rem;
-  box-shadow: 0 8px 24px rgba(10,10,10,0.06);
+
+
+/* Estilos para centrar el contenido y dar un fondo limpio */
+.page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh; /* Sigue ocupando la altura para centrar el contenido */
+    padding: 2rem;
 }
-.small-note { color: #6b7280; font-size: .95rem; }
-.form-row { margin-bottom: 1rem; }
-.select, input[type="date"], input[type="time"], input[type="text"], input[type="number"] {
-  width: 100%;
-  padding: .6rem .9rem;
-  border: 1px solid #e6e6e6;
-  border-radius: 10px;
-  background: #fafafa;
-}
-.btn-primary {
-  background: #a8d8ea;
-  color: #fff;
-  padding: .6rem 1rem;
-  border-radius: 9999px;
-  font-weight: 600;
-}
-.empty { color: #9ca3af; }
+
+  /* Tarjeta de reserva con el estilo deseado */
+  .card {
+    background: #ffffff; /* La tarjeta en blanco para que resalte, o puedes usar var(--color-lemon); */
+    border-radius: 16px; /* Bordes más redondeados */
+    padding: 2.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); /* Sombra más suave y profesional */
+    max-width: 450px; /* Ancho máximo para la tarjeta */
+    width: 100%;
+    text-align: left; /* Alineación del texto a la izquierda */
+  }
+  
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-header h2 {
+    font-size: 1.75rem; /* Tamaño del título */
+    font-weight: 600;
+    color: var(--color-chocolate); /* Título en Chocolate */
+  }
+  
+  .card-header p {
+    color: var(--color-text-light); 
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+  }
+  
+  .card-header a {
+    color: var(--color-caramel); /* Enlace "Volver" en Caramel */
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .card-header a:hover {
+    color: var(--color-chocolate);
+  }
+
+  /* Estilos para los campos del formulario */
+  .form-row {
+    margin-bottom: 1.25rem;
+  }
+
+  .form-row label {
+    display: block;
+    color: var(--color-chocolate); /* Labels en Chocolate */
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-input, .form-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e5e7eb; /* Borde gris claro */
+    border-radius: 10px;
+    background-color: var(--color-lemon); /* Fondo de input en Lemon para un toque sutil */
+    color: var(--color-chocolate); /* Texto del input en Chocolate */
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  
+  .form-input::placeholder {
+    color: rgba(114, 92, 63, 0.6); /* Placeholder más claro */
+  }
+
+
+  .form-input:focus, .form-select:focus {
+    outline: none;
+    border-color: var(--color-strawberry); /* Borde al enfocar en Strawberry */
+    box-shadow: 0 0 0 3px rgba(229, 173, 168, 0.4); /* Sombra de enfoque de Strawberry */
+  }
+  
+  /* Contenedor para fecha y hora */
+  .grid-cols-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  /* Estilos para los botones */
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 9999px; /* Botones totalmente redondeados */
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .btn-primary {
+    background-color: var(--color-strawberry); /* Botón principal en Strawberry */
+    color: #ffffff;
+  }
+
+  .btn-secondary {
+    background-color: var(--color-caramel); /* Botón secundario en Caramel */
+    color: #ffffff; /* Texto blanco para contraste */
+  }
+  
+  .empty-message {
+    color: var(--color-text-light); 
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+
 </style>
 
-<div class="container-reserva">
+<div class="page-container">
   <div class="card">
-    <div class="flex items-center justify-between mb-4">
+    <div class="card-header">
       <div>
-        <h2 class="text-2xl font-semibold">Reservar mesa</h2>
-        <p class="small-note">Reservá una mesa sin necesidad de hacer un pedido. Elegí fecha, hora y mesa libre.</p>
+        <h2>Reservar mesa</h2>
+        <p>Elegí fecha, hora y una mesa libre.</p>
       </div>
       <div>
         <a href="{{ url_for('dashboard_cliente') }}">Volver</a>
       </div>
     </div>
 
-    <form id="reserva-standalone-form" class="mt-4">
+    <form id="reserva-standalone-form">
       <div class="form-row">
-        <label class="block text-sm font-medium mb-1">Tu nombre</label>
-        <input id="reserva-cliente" name="cliente" type="text" placeholder="Tu nombre (opcional)" />
+        <label for="reserva-cliente">Tu nombre</label>
+        <input id="reserva-cliente" name="cliente" type="text" placeholder="(Opcional)" class="form-input" />
       </div>
 
       <div class="form-row">
-        <label class="block text-sm font-medium mb-1">N° de personas</label>
-        <input id="reserva-personas" name="personas" type="number" min="1" value="2" />
+        <label for="reserva-personas">N° de personas</label>
+        <input id="reserva-personas" name="personas" type="number" min="1" value="2" class="form-input" />
       </div>
 
-      <div class="form-row grid grid-cols-2 gap-4">
+      <div class="form-row grid-cols-2">
         <div>
-          <label class="block text-sm font-medium mb-1">Fecha</label>
-          <input id="reserva-fecha" name="fecha" type="date" required />
+          <label for="reserva-fecha">Fecha</label>
+          <input id="reserva-fecha" name="fecha" type="date" required class="form-input" />
         </div>
         <div>
-          <label class="block text-sm font-medium mb-1">Hora</label>
-          <input id="reserva-hora" name="hora" type="time" required />
+          <label for="reserva-hora">Hora</label>
+          <input id="reserva-hora" name="hora" type="time" required class="form-input" />
         </div>
       </div>
 
       <div class="form-row">
-        <label class="block text-sm font-medium mb-1">Mesas libres</label>
-        <select id="reserva-mesa-select" name="mesa" required class="select">
-          <option value="">Cargando mesas...</option>
-        </select>
-        <p id="sin-mesas" class="empty mt-2 hidden">No hay mesas libres en este momento.</p>
+        <label for="reserva-mesa-select">Mesas libres</label>
+        <select id="reserva-mesa-select" name="mesa" required class="form-select">
+          <option value="" disabled selected>-- Elegí una mesa libre --</option>
+          </select>
+        <p id="sin-mesas" class="empty-message" style="display: none;">No hay mesas libres para la fecha y hora seleccionadas.</p>
       </div>
 
-      <div class="form-row flex gap-3">
-        <button id="reserva-submit" class="btn-primary" type="submit">Confirmar reserva</button>
-        <button id="reserva-cancel" type="button" class="btn-primary" style="background:#f3f4f6;color:#111">Cancelar</button>
+      <div style="display: flex; gap: 0.75rem; margin-top: 2rem;">
+        <button id="reserva-submit" class="btn btn-primary" type="submit">Confirmar reserva</button>
+        <button id="reserva-cancel" type="button" class="btn btn-secondary">Cancelar</button>
       </div>
     </form>
   </div>

@@ -1,17 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="dashboard-container">
-    <h1 class="welcome-message">¡Bienvenido a CAFE TERRAZA</h1>
-    
+<div class="dashboard-container">    
     <div id="content-modules">
         
         <div id="presentacion-module" class="module hidden">
             <h2>Presentación</h2>
             <div class="presentacion">
-                <img src="{{ url_for('static', filename='img/cafeteria.jpg') }}" alt="Café Terraza" class="presentacion-img">
-                <p>☕ Bienvenido a <strong>Café Terraza</strong>, un espacio único para disfrutar del mejor café y repostería artesanal. 
-                    Aquí podrás gestionar todo lo necesario para brindar un excelente servicio a nuestros clientes.</p>
+                <img src="{{ url_for('static', filename='images/banner.png') }}" alt="Café Terraza" class="presentacion-img">
+                <p>☕ Bienvenido al <strong>Panel de gestión de Café Terraza</strong></p>
             </div>
         </div>
 
@@ -24,23 +21,29 @@
             <div id="modal-producto" class="modal hidden">
                 <div class="modal-content">
                     <h3 id="modal-producto-titulo">Nuevo Producto</h3>
+                    
                     <form id="producto-form">
-                        <input type="hidden" id="producto-id">
+                         <input type="hidden" id="producto-id">
 
                         <label for="producto-nombre">Nombre:</label>
-                        <input type="text" id="producto-nombre" name="nombre" required>
+                         <input type="text" id="producto-nombre" name="nombre" required>
 
-                        <label for="producto-categoria">Categoría:</label>
+                            <label for="producto-categoria">Categoría:</label>
                         <input type="text" id="producto-categoria" name="categoria">
 
                         <label for="producto-precio">Precio:</label>
                         <input type="number" id="producto-precio" name="precio" step="0.01" required>
 
-                        <div class="modal-actions">
-                            <button type="submit" class="btn">Guardar</button>
+                        <label for="producto-imagen">Imagen del Producto:</label>
+                        <input type="file" id="producto-imagen" name="imagen" accept="image/png, image/jpeg, image/webp">
+
+                        <label for="producto-descripcion">Descripción:</label>
+                        <textarea id="producto-descripcion" name="descripcion" rows="3" placeholder="Ej. Delicioso café con leche espumosa..."></textarea>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn">Guardar</button>
                             <button type="button" id="cerrar-modal-producto" class="btn cancelar">Cancelar</button>
-                        </div>
-                    </form>
+                 </div>
+                        </form>
                 </div>
             </div>
         </div>
@@ -49,6 +52,7 @@
         <div id="pedidos-module" class="module hidden">
             <h2>Gestión de Pedidos</h2>
             <button id="crear-pedido-btn" class="btn">Crear Nuevo Pedido</button>
+            <button id="go-facturacion-btn" class="btn">Gestionar Facturación</button>
             <div id="tabla-pedidos-container"></div>
 
             <div id="modal-nuevo-pedido" class="modal hidden">
@@ -141,6 +145,7 @@
                     </form>
                 </div>
             </div>
+    
             
             <!-- Modal para mostrar factura -->
             <div id="modal-factura" class="modal hidden">
@@ -178,34 +183,134 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div id="welcome-message" class="module welcome-module">
-        <h2>Panel de Control</h2>
-        <p>Gestión</p>
-        <div class="dashboard-cards">
-            <div class="card" data-module="presentacion">
-                <h3>Presentación</h3>
-                <p>Ver presentación de la cafetería.</p>
+        <div id="reportes-module" class="module hidden">
+            <h2>REPORTES Y ESTADÍSTICAS</h2>
+            
+            <!-- Datos Diarios -->
+            <div class="reportes-section">
+                <h3 class="reportes-subtitle">Datos Diarios</h3>
+                <div class="reportes-cards">
+                    <div class="reporte-card">
+                        <div class="reporte-card-title">PEDIDOS HOY</div>
+                        <div class="reporte-card-value" id="pedidos-hoy">0</div>
+                    </div>
+                    <div class="reporte-card">
+                        <div class="reporte-card-title">INGRESOS TOTALES</div>
+                        <div class="reporte-card-value" id="ingresos-hoy">$0.00</div>
+                    </div>
+                    <div class="reporte-card reporte-button-card">
+                        <button id="generar-factura-diaria-btn" class="btn-reporte">Generar factura</button>
+                    </div>
+                </div>
             </div>
-            <div class="card" data-module="menu">
-                <h3>Menú</h3>
-                <p>Ver y gestionar productos.</p>
-            </div>
-            <div class="card" data-module="pedidos">
-                <h3>Pedidos</h3>
-                <p>Ver y gestionar pedidos.</p>
-            </div>
-            <div class="card" data-module="mesas">
-                <h3>Mesas</h3>
-                <p>Ver y gestionar las mesas del local.</p>
-            </div>
-            <div class="card" data-module="facturacion">
-                <h3>Facturación</h3>
-                <p>Gestionar pagos y facturas.</p>
+
+            <!-- Datos Mensuales -->
+            <div class="reportes-section">
+                <h3 class="reportes-subtitle">Datos Mensuales</h3>
+                <div class="reportes-cards">
+                    <div class="reporte-card">
+                        <div class="reporte-card-title">PEDIDOS MES</div>
+                        <div class="reporte-card-value" id="pedidos-mes">0</div>
+                    </div>
+                    <div class="reporte-card">
+                        <div class="reporte-card-title">INGRESOS TOTALES</div>
+                        <div class="reporte-card-value" id="ingresos-mes">$0.00</div>
+                    </div>
+                    <div class="reporte-card reporte-button-card">
+                        <button id="generar-reporte-mensual-btn" class="btn-reporte">Generar reporte mensual</button>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- Modal para mostrar factura diaria -->
+        <div id="modal-factura-diaria" class="modal hidden">
+            <div class="modal-content factura-modal">
+                <div class="factura-header">
+                    <h3>Factura Diaria - <span id="fecha-factura-diaria"></span></h3>
+                    <button id="cerrar-modal-factura-diaria" class="btn-cerrar">×</button>
+                </div>
+                
+                <div class="factura-content" id="factura-diaria-content">
+                    <!-- Contenido de la factura diaria se carga dinámicamente -->
+                </div>
+                
+                <div class="factura-actions">
+                    <button id="imprimir-factura-diaria-btn" class="btn-imprimir">IMPRIMIR FACTURA</button>
+                    <button id="cerrar-modal-factura-diaria-btn" class="btn-cerrar-modal">CERRAR</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para mostrar reporte mensual -->
+        <div id="modal-reporte-mensual" class="modal hidden">
+            <div class="modal-content factura-modal">
+                <div class="factura-header">
+                    <h3>Reporte Mensual - <span id="mes-reporte"></span></h3>
+                    <button id="cerrar-modal-reporte-mensual" class="btn-cerrar">×</button>
+                </div>
+                
+                <div class="factura-content" id="reporte-mensual-content">
+                    <!-- Contenido del reporte mensual se carga dinámicamente -->
+                </div>
+                
+                <div class="factura-actions">
+                    <button id="imprimir-reporte-mensual-btn" class="btn-imprimir">IMPRIMIR REPORTE</button>
+                    <button id="cerrar-modal-reporte-mensual-btn" class="btn-cerrar-modal">CERRAR</button>
+                </div>
+            </div>
+        </div>
+        
+    </div>  
+
+<!-- =============== WELCOME (presentación embebida + 4 cards) =============== -->
+    <div id="welcome-message" class="module welcome-module">
+        <!-- Presentación incluida directamente en inicio -->
+        <h1 class="welcome-message">Panel de gestión de Café Terraza</h1>
+        <div class="welcome-presentation-card">
+        </div>
+
+        <!-- Tarjetas principales: Menú / Pedidos y Pagos / Mesas / Reportes -->
+        <div class="dashboard-cards">
+  <div class="card" data-module="menu">
+    <img src="{{ url_for('static', filename='images/menu.png') }}" alt="Icono Menú" class="card-img">
+    <h3>Menú</h3>
+    <p>Ver y gestionar productos.</p>
+  </div>
+
+  <div class="card" data-module="pedidos">
+    <img src="{{ url_for('static', filename='images/pedidos.png') }}" alt="Icono Pedidos" class="card-img">
+    <h3>Pedidos y Pagos</h3>
+    <p>Gestionar pedidos y facturas.</p>
+  </div>
+
+  <div class="card" data-module="mesas">
+    <img src="{{ url_for('static', filename='images/mesas.png') }}" alt="Icono Mesas" class="card-img">
+    <h3>Mesas</h3>
+    <p>Ver y gestionar mesas del local.</p>
+  </div>
+
+  <div class="card" data-module="reportes">
+    <img src="{{ url_for('static', filename='images/estadisticas.png') }}" alt="Icono Reportes" class="card-img">
+    <h3>Reportes</h3>
+    <p>Generar reportes de ventas.</p>
+  </div>
+</div>
+
+    <!-- Nuevo módulo intermedio (oculto por defecto) para elegir entre Pedidos y Facturación -->
+    <div id="pedidos-pagos-module" class="module hidden">
+        <h2>Pedidos y Pagos</h2>
+        <p>Elegí qué querés gestionar:</p>
+        <div class="pedidos-pagos-options">
+            <button id="go-pedidos-btn" class="btn">Gestionar Pedidos</button>
+            <button id="go-facturacion-intermedio-btn" class="btn">Gestionar Facturación</button>
+            <button id="back-welcome-btn" class="btn cancelar" style="margin-left:10px;">Volver</button>
+        </div>
     </div>
+    <!-- =============== END WELCOME =============== -->
+
+</div>
 </div>
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 

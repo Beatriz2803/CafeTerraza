@@ -1,207 +1,482 @@
 {% extends "base_cliente.html" %}
 
 {% block content %}
-<script src="https://cdn.tailwindcss.com"></script>
 <style>
-  body {
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(to right, #fdfcfb, #e2d1c3); 
-  }
-  .menu-card {
-    background: #fffdba;
-    border-radius: 1rem;
-    padding: 1.25rem;
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  .menu-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.08);
-  }
-  .btn {
-    background: #a9eaac;
-    color: #333;
-    font-weight: 600;
-    padding: 0.5rem 1rem;
-    border-radius: 9999px;
-    transition: all 0.2s ease;
-  }
-  .btn:hover {
-    background: #89cff0;
-    transform: translateY(-2px);
-  }
+    /* --- Fuentes e importaciones --- */
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap');
+
+    /* ===== PALETA DE COLORES "PASTELERÍA CHIC" ===== */
+    :root {
+        --bg-main: #fcf9f5;                  /* Fondo principal, blanco roto cálido */
+        --bg-main-rgba: 252, 249, 245;       /* Mismo color en formato RGB para la capa de opacidad */
+        --surface-module: #ffffff;           /* Superficie de módulos y tarjetas, blanco puro */
+        --accent-mint: #d8eadb;              /* Menta suave para detalles y fondos sutiles */
+        --accent-rose: #f0e6e7;              /* Rosa pálido para toques delicados */
+        --accent-gold: #c2a781;              /* Dorado suave para ornamentos y bordes */
+        --text-dark: #4a4a4a;                /* Gris oscuro elegante para texto principal */
+        --text-light: #8d8d8d;               /* Gris más claro para texto secundario */
+        --shadow-delicate: 0 4px 15px rgba(212, 184, 184, 0.253); /* Sombra muy sutil */
+        --radius-soft: 8px;                  /* Bordes ligeramente redondeados */
+    }
+
+    /* --- Estilos Base --- */
+    body {
+        /* Color de fondo de respaldo si la imagen no carga */
+        background-color: var(--bg-main);
+
+        /* ==================================================================
+           ===> AQUÍ ESTÁ LA MODIFICACIÓN PARA TU IMAGEN DE FONDO <===
+           ================================================================== */
+        /* Capa de color semitransparente + tu imagen de fondo */
+        background-image:
+            linear-gradient(rgba(var(--bg-main-rgba), 0.92), rgba(var(--bg-main-rgba), 0.92)),
+            url("{{ url_for('static', filename='images/fondo_login.png') }}");
+
+        /* Propiedades para que la imagen se ajuste bien */
+        background-size: 400px;             /* Ajustamos el tamaño del patrón para que no sea muy grande */
+        background-position: center center; /* Centra la imagen */
+        background-attachment: fixed;       /* La imagen se queda fija al hacer scroll */
+
+        font-family: 'Lato', sans-serif;
+        color: var(--text-dark);
+        margin: 0;
+        padding: 0;
+    }
+
+    /* --- Contenedor Principal (para centrar el contenido y aplicar padding) --- */
+    .dashboard-container {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 2.5rem;
+    }
+
+    /* --- BANNER DE BIENVENIDA (estilo más ornamental) --- */
     
-/* --- Estilos Vista Cliente --- */
-body {
-  font-family: 'Inter', sans-serif;
-  background: linear-gradient(to right, #fdfcfb, #deeafc); /* Beige → Celeste suave */
-  color: #333;
+/* --- BANNER DE BIENVENIDA (estilo más ornamental) --- */
+.welcome-banner {
+    /* 1. Imagen de fondo con capa oscura para legibilidad */
+    background-image: 
+        linear-gradient(rgba(194, 155, 155, 0.534), rgba(141, 118, 118, 0.45)),
+        url("{{ url_for('static', filename='images/banner.png') }}");
+    background-size: cover;
+    background-position: center;
+
+    /* 2. Estilos generales del contenedor del banner */
+    color: #ffffff; /* Color de texto principal: BLANCO */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6); /* Sombra para que el texto resalte */
+    border: 1px solid #eee;
+    border-radius: var(--radius-soft);
+    box-shadow: var(--shadow-delicate);
+    padding: 6rem 3rem;
+    margin-bottom: 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
 }
 
-/* Módulos */
-.module {
-  background: rgba(255, 241, 221, 0.43);
-  border-radius: 1.5rem;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.06);
-  padding: 2rem;
+/* Título y subtítulo del banner */
+.welcome-banner__title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: 0.05em;
+    color: inherit; /* <--- CORRECCIÓN: Usa el color blanco del padre */
 }
 
-/* Títulos de módulos */
-.module h2 {
-  color: #444; /* gris oscuro en lugar de rojo */
-  font-weight: 700;
-  border-bottom: 2px solid rgba(255, 218, 127, 0.86);
-  padding-bottom: .75rem;
-  margin-bottom: 1.5rem;
-  text-transform: none;
+.welcome-banner__subtitle {
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: inherit; /* <--- CORRECCIÓN: Usa el color blanco del padre */
 }
 
-/* Cards del menú */
-.menu-card {
-  background: #ffffff;
-  border-radius: 1rem;
-  padding: 1.25rem;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+/* Elementos decorativos en las esquinas */
+.welcome-banner::before, 
+.welcome-banner::after {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background-image: url("{{ url_for('static', filename='images/banner.png') }}");
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.2;
 }
+.welcome-banner::before { top: 15px; left: 15px; transform: scaleX(-1); }
+.welcome-banner::after { bottom: 15px; right: 15px; }
+    /* --- Contenedor del Menú y Pedido (Grid) --- */
+    .content-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2.5rem;
+    }
 
-.menu-card img {
-  border-radius: 0.75rem;
-  margin-bottom: 1rem;
-  max-height: 140px;
-  object-fit: cover;
-}
+    /* --- Módulos Generales --- */
+    .module {
+        background: var(--surface-module);
+        border: 1px solid #eee;
+        border-radius: var(--radius-soft);
+        box-shadow: var(--shadow-delicate);
+        padding: 2rem;
+    }
+    .module__title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.9rem;
+        color: var(--text-dark);
+        text-align: center;
+        margin-top: 0;
+        margin-bottom: 2rem;
+        position: relative;
+        padding-bottom: 1rem;
+    }
+    .module__title::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 2px;
+        background-color: var(--accent-gold);
+    }
 
-.menu-card h4 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: .25rem;
-}
+    /* --- Menú de Productos --- */
+    #menu-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.8rem;
+    }
+    .menu-card {
+        background-color: var(--accent-mint);
+        border: 1px solid #e0e0e0;
+        border-radius: var(--radius-soft);
+        text-align: center;
+        padding: 1.5rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .menu-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    .menu-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%;
+        height: 8px;
+        background-color: var(--accent-gold);
+        opacity: 0.6;
+    }
+    .menu-card__image {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+        border-radius: 4px;
+        margin-bottom: 1.2rem;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    .menu-card__name {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+    .menu-card__price {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.1rem;
+        color: var(--accent-gold);
+        font-weight: 700;
+        margin-bottom: 1.2rem;
+    }
+    .menu-card button {
+        background-color: var(--accent-gold);
+        color: white;
+        font-weight: 600;
+        padding: 0.7rem 1.8rem;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .menu-card button:hover {
+        background-color: #b0916a;
+        transform: translateY(-2px);
+    }
 
-.menu-card p {
-  color: #666;
-  font-weight: 500;
-  margin-bottom: .75rem;
-}
+    /* --- Formulario de Pedido y Carrito --- */
+    .order-form {
+        padding-top: 1rem;
+    }
+    .order-form label {
+        display: block;
+        font-weight: 600;
+        color: var(--text-light);
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+    .order-form input, .order-form select {
+        width: 100%;
+        padding: 0.85rem 1.2rem;
+        border: 1px solid #e0e0e0;
+        background-color: var(--accent-rose);
+        border-radius: 5px;
+        font-family: 'Lato', sans-serif;
+        font-size: 1rem;
+        color: var(--text-dark);
+        transition: all 0.2s ease;
+    }
+    .order-form input:focus, .order-form select:focus {
+        outline: none;
+        border-color: var(--accent-gold);
+        box-shadow: 0 0 0 3px rgba(194, 167, 129, 0.2);
+        background-color: white;
+    }
 
-.menu-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
-}
+    #cart-items {
+        list-style: none; padding: 0; margin: 2rem 0;
+    }
+    #cart-items li {
+        background-color: var(--accent-rose);
+        padding: 0.85rem 1.2rem;
+        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+        border: 1px solid #f5e8ea;
+    }
+    #cart-items li:last-child { margin-bottom: 0; }
+    #cart-items li button {
+        background: none; border: none; color: #cc6666; cursor: pointer; font-size: 1.1rem; font-weight: bold;
+        transition: color 0.2s ease;
+    }
+    #cart-items li button:hover {
+        color: #aa4444;
+    }
 
-/* Botón agregar */
-.menu-card button {
-  background: #ffd37f;
-  color: #9d3e00;
-  font-weight: 600;
-  padding: .5rem 1.25rem;
-  border-radius: 9999px;
-  transition: all 0.2s ease;
-}
-.menu-card button:hover {
-  background: #89bff0;
-  transform: translateY(-2px);
-}
+    .order-total {
+        text-align: right;
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        padding-top: 1.8rem;
+        margin-top: 2rem;
+        border-top: 1px dashed var(--text-light);
+    }
 
-/* Carrito */
-#cart-items li {
-  background: #f9f9f9;
-  padding: .75rem 1rem;
-  border-radius: .75rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: .95rem;
-  color: #444;
-}
+    /* --- Botones del formulario de pedido --- */
+    .btn-group {
+        margin-top: 2.5rem;
+    }
+    .btn {
+        width: 100%;
+        text-align: center;
+        display: block;
+        padding: 1rem 1.5rem;
+        border-radius: 5px;
+        font-family: 'Lato', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+    .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    .btn--primary {
+        background-color: var(--accent-gold);
+        color: white;
+    }
+    .btn--primary:hover {
+        background-color: #b0916a;
+    }
+    .btn--secondary {
+        background-color: var(--accent-mint);
+        color: var(--text-dark);
+        margin-top: 1rem;
+        border: 1px solid #d0d0d0;
+    }
+    .btn--secondary:hover {
+        background-color: #c9e0cb;
+        color: var(--text-dark);
+    }
 
-#cart-items li button {
-  background: none;
-  border: none;
-  color: #f87171; 
-  font-size: 1rem;
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
-#cart-items li button:hover {
-  color: #dc2626;
+    /* --- Responsividad --- */
+    @media (max-width: 1024px) {
+        .content-grid { grid-template-columns: 1fr; }
+        .dashboard-container { padding: 1.5rem; }
+        .welcome-banner__title { font-size: 2.5rem; }
+        .module__title { font-size: 1.6rem; }
+        #menu-container { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+    }
+    @media (max-width: 768px) {
+        .dashboard-container { padding: 1rem; }
+        .welcome-banner { padding: 2rem 1.5rem; }
+        .welcome-banner__title { font-size: 2rem; }
+        .welcome-banner__subtitle { font-size: 1rem; }
+        .module__title { font-size: 1.4rem; }
+        .menu-card__image { height: 120px; }
+        .menu-card__name { font-size: 1.1rem; }
+        .order-total { font-size: 1.6rem; }
+    }
+    /* ===== Estilo del carrusel ===== */
+    .carousel-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .carousel-track {
+      display: flex;
+      overflow: hidden;
+      width: 720px;
+      gap: 16px;
+      scroll-behavior: smooth;
+      padding: 10px;
+    }
+
+    .carousel-item {
+      background: var(--accent-mint);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+      flex: 0 0 200px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s;
+      opacity: 0.6;
+      cursor: pointer;
+    }
+    .carousel-item.selected {
+      transform: scale(1.14);
+      opacity: 1;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    }
+    .carousel-item img {
+      width: 100%;
+      height: 130px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    /* Detalle debajo del producto */
+    .producto-detalle { text-align: center; margin-top: 1rem; }
+    .cantidad-control { display:flex; gap:12px; justify-content:center; align-items:center; margin-top:0.6rem; }
+    .cantidad-control button {
+      background: var(--accent-gold);
+      border: none; color:#fff; padding:0.28rem 0.8rem; border-radius:6px; cursor:pointer;
+    }
+    .cantidad-control span { font-weight:700; font-size:1.05rem; padding:0 6px; min-width:24px; text-align:center; display:inline-block; }
+    .btn-agregar { margin-top: 10px; background: var(--accent-gold); color:white; border:none; padding:0.6rem 1rem; border-radius:6px; cursor:pointer; }
+
+.detalle-descripcion {
+  font-size: 0.95rem;      /* Un poco más pequeño que el texto normal */
+  color: var(--text-light); /* Usa el color de texto secundario */
+  margin: 0.5rem 1rem 1rem; /* Espaciado vertical y horizontal */
+  line-height: 1.5;
+  min-height: 40px;      /* Un alto mínimo para evitar saltos en el layout */
 }
 
 </style>
-  <!--Presentacion-->
-  <div class="bg-white rounded-2xl shadow-lg p-8 mb-10 flex flex-col md:flex-row items-center gap-6">
-    <img src="https://placehold.co/150x150/a8d8ea/fff?text=☕" alt="Logo" class="rounded-full shadow-md">
-    <div>
-      <h1 class="text-4xl md:text-5xl font-bold text-gray-800">Bienvenido, {{ user.username }} 👋</h1>
-      <p class="text-lg text-gray-600 mt-2">Elige tus productos y disfruta de la experiencia Café Terraza ✨</p>
-    </div>
+
+<div class="dashboard-container">
+  
+  <div class="welcome-banner">
+    <h1 class="welcome-banner__title">Bienvenido a Café Terraza</h1>
+    <p class="welcome-banner__subtitle">
+      Un placer tenerte con nosotros, {{ user.username }}.<br>
+      Descubre nuestra exquisita selección de dulces y cafés.
+    </p>
   </div>
 
-  <!-- Secciones Menú + Carrito -->
-  <div class="grid md:grid-cols-2 gap-10">
+  <div class="content-grid">
     
-    <!-- Menú -->
-    <div class="module bg-white rounded-2xl shadow-lg p-8">
-      <h2 class="text-2xl font-semibold text-gray-700 mb-6">Menú de Productos</h2>
-      <div id="menu-container" class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2">
-        <!-- Los productos se cargan dinámicamente -->
-      </div>
+    <!-- ======== MÓDULO MENÚ (con carrusel) ======== -->
+    <div class="module">
+      <h2 class="module__title">Nuestro Menú</h2>
+
+    <div class="carousel-container">
+        <button id="prev-btn" class="carousel-btn">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <div id="menu-carousel" class="carousel-track"></div>
+
+        <button id="next-btn" class="carousel-btn">
+            <i class="fas fa-chevron-right"></i>
+        </button>
     </div>
 
-    <!-- Carrito -->
-    <div class="module bg-white rounded-2xl shadow-lg p-8">
-      <h2 class="text-2xl font-semibold text-gray-700 mb-6">Tu Pedido</h2>
-      <form id="cliente-pedido-form" class="space-y-6">
+
+      <div id="producto-detalle" class="producto-detalle">
+    <h3 id="detalle-nombre">Selecciona un producto</h3>
+    <p id="detalle-descripcion" class="detalle-descripcion"></p>
+    <p id="detalle-info" class="detalle-info"></p>
+    <button id="agregar-btn" class="btn-agregar" disabled>Agregar</button>
+</div>
+    </div>
+    <!-- ======== FIN MÓDULO MENÚ ======== -->
+
+
+    <!-- ======== MÓDULO PEDIDO ======== -->
+    <div class="module">
+      <h2 class="module__title">Selecciona tu pedido</h2>
+      <form id="cliente-pedido-form" class="order-form">
         
-        <!-- Nombre -->
-        <div>
-          <label for="cliente-nombre" class="block text-gray-600 font-medium mb-1">Tu nombre:</label>
-          <input type="text" id="cliente-nombre" name="nombre" placeholder="Tu nombre"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-300">
+        <div class="form-group">
+          <label for="cliente-nombre">Nombre para el pedido:</label>
+          <input
+            type="text"
+            id="cliente-nombre"
+            name="nombre"
+            placeholder="Ej. Ana García"
+            value="{{ user.username }}"
+          />
         </div>
 
-        <!-- Productos seleccionados -->
-        <h4 class="text-lg font-medium text-gray-700 mt-6">Productos seleccionados:</h4>
-        <ul id="cart-items" class="space-y-3"></ul>
+        <ul id="cart-items"></ul>
 
-        <!-- Total -->
-        <p class="text-right text-2xl font-bold text-gray-800 pt-4 border-t">
-          Total: $<span id="total-price">0.00</span>
+        <p class="order-total">
+          Total: <span id="total-price">$0.00</span>
         </p>
 
-        <!-- Selección mesa -->
-                 <div id="mesa-select-container">
-                    <label for="mesa-select">Selecciona el modo de entrega</label>
-                    <select id="mesa-select">
-                        <option value="">-- Selecciona --</option>
-                        <option value="para_llevar">Para llevar</option>
-                        <option value="delivery">Delivery</option>
-                    </select>
-                </div>
-          
-                <button id="confirm-order-btn" type="button" class="w-full btn mt-6">Confirmar Pedido</button>
-                <div class="flex justify-center mt-6">
-                  <a href="{{ url_for('reservas_page') }}" 
-                     class="w-full text-center bg-blue-200 hover:bg-blue-300 text-gray-800 text-lg font-semibold py-3 rounded-xl shadow-md transition transform hover:scale-105">
-                     Reservar Mesa
-                  </a>
-                </div>
-
-
-            </form>
+        <div class="form-group">
+          <label for="modalidad-entrega">Modalidad de entrega:</label>
+          <select id="modalidad-entrega" name="modalidad">
+            <option value="">-- Selecciona --</option>
+            <option value="para_llevar">Para llevar</option>
+            <option value="delivery">Delivery</option>
+            <option value="en_mesa">En mesa</option>
+          </select>
         </div>
+
+        <div class="btn-group">
+          <button id="confirm-order-btn" type="button" class="btn btn--primary">
+            Confirmar Pedido
+          </button>
+          <a
+            href="{{ url_for('reservas_page') }}"
+            class="btn btn--secondary"
+          >Gestionar Reservas</a>
+        </div>
+      </form>
     </div>
-    
+    <!-- ======== FIN MÓDULO PEDIDO ======== -->
+
+  </div>
+</div>
 
 
-<script src="{{ url_for('static', filename='js/script-cliente.js') }}"></script>
 {% endblock %}

@@ -1,0 +1,189 @@
+    {% extends "base_cliente.html" %}
+
+    {% block content %}
+    <style>
+    /* Variables de la paleta de colores para fácil referencia */
+    :root {
+        --color-strawberry: #E5ADA8;
+        --color-vanilla: #E5E0D8;
+        --color-caramel: #D0A77B;
+        --color-chocolate: #241f18;
+        --color-lemon: #EFE8D8;
+    }
+
+    body {
+    margin: 0; /* Asegúrate de que no haya márgenes por defecto */
+    padding: 0; /* Asegúrate de que no haya padding por defecto */
+    
+    /* 1. Capa de color semitransparente + tu imagen de fondo */
+    background-image:
+        linear-gradient(rgba(229, 224, 216, 0.85), rgba(229, 224, 216, 0.85)),
+        url("{{ url_for('static', filename='images/fondo_login.png') }}"); /* Asegúrate de que esta ruta sea correcta */
+
+    /* 2. Propiedades para que la imagen se ajuste bien */
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed; /* Mantiene la imagen fija al hacer scroll */
+    
+    /* Opcional: Color de respaldo si la imagen no carga */
+    background-color: var(--color-vanilla);
+}
+
+    /* Contenedor principal de la página RA */
+    .ra-container {
+        display: flex;
+        gap: 2rem;
+        background-color: #fff;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Columna de la lista del menú */
+    .menu-list {
+        flex: 1;
+        max-width: 400px;
+    }
+
+    .menu-list h2 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: var(--color-chocolate);
+        margin-bottom: 1.5rem;
+    }
+
+    /* Estilo de cada producto en la lista */
+    .menu-item {
+        padding: 1rem 1.25rem;
+        margin-bottom: 0.75rem;
+        border-radius: 12px;
+        background-color: var(--color-lemon);
+        color: var(--color-chocolate);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        border: 2px solid transparent;
+    }
+
+    .menu-item:hover {
+        transform: translateX(5px);
+        background-color: var(--color-vanilla);
+    }
+
+    /* Estilo para el producto seleccionado (activo) */
+    .menu-item.active {
+        background-color: var(--color-strawberry);
+        color: #201919;
+        border-color: rgba(107, 87, 70, 0.966);
+        transform: translateX(5px);
+    }
+
+    /* Columna para mostrar el código QR */
+    .qr-display {
+        flex: 1.5;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--color-vanilla);
+        border-radius: 12px;
+        min-height: 400px;
+        text-align: center;
+        padding: 2rem;
+    }
+    
+    #qr-placeholder {
+        color: var(--color-chocolate);
+        opacity: 0.7;
+    }
+    
+    #qr-image {
+        max-width: 1000px;
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+    
+    #qr-product-name {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--color-chocolate);
+    }
+    </style>
+
+    <div class="ra-container">
+    <div class="menu-list">
+        <h2>Nuestro Menú en RA</h2>
+        <h1>Escanea el QR y sigue las instrucciones</h1>
+        <ul id="product-list">
+        
+        <li class="menu-item" 
+            data-qr-image="{{ url_for('static', filename='images/latte.png') }}" 
+            data-product-name="Café Latte">
+            Café Latte
+        </li>
+
+        <li class="menu-item" 
+            data-qr-image="{{ url_for('static', filename='images/tostadapalta.png') }}" 
+            data-product-name="Tostada con aguacate">
+            Tostada con aguacate
+        </li>
+
+        <li class="menu-item" 
+            data-qr-image="{{ url_for('static', filename='images/tostados.png') }}" 
+            data-product-name="Tostados JYQ">
+            Tostados JYQ
+        </li>
+
+        <li class="menu-item" 
+            data-qr-image="{{ url_for('static', filename='images/pizzanapo.png') }}" 
+            data-product-name="Pizza Napolitana">
+            Pizza Napolitana
+        </li>
+        <li class="menu-item" 
+            data-qr-image="{{ url_for('static', filename='images/medialunas.png') }}" 
+            data-product-name="Medialunas">
+            Medialunas
+        </li>
+        
+        </ul>
+    </div>
+
+    <div class="qr-display">
+        <div id="qr-placeholder">
+        <p>Seleccioná un producto del menú para ver su código QR.</p>
+        </div>
+        <div id="qr-result" style="display: none;">
+        <img id="qr-image" src="" alt="Código QR del producto">
+        <h3 id="qr-product-name"></h3>
+        </div>
+    </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const menuItems = document.querySelectorAll('.menu-item');
+        const qrPlaceholder = document.getElementById('qr-placeholder');
+        const qrResult = document.getElementById('qr-result');
+        const qrImage = document.getElementById('qr-image');
+        const qrProductName = document.getElementById('qr-product-name');
+
+        menuItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const productName = item.dataset.productName;
+            const qrImagePath = item.dataset.qrImage;
+
+            qrImage.src = qrImagePath;
+            qrProductName.textContent = productName;
+
+            qrPlaceholder.style.display = 'none';
+            qrResult.style.display = 'block';
+            
+            menuItems.forEach(el => el.classList.remove('active'));
+            item.classList.add('active');
+        });
+        });
+    });
+    </script>
+    {% endblock %}

@@ -14,8 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
         'pedidos': document.getElementById('pedidos-module'),
         'mesas': document.getElementById('mesas-module'),
         'facturacion': document.getElementById('facturacion-module'),
-        'welcome': document.getElementById('welcome-message')
+        'reportes': document.getElementById('reportes-module'),
+        'welcome': document.getElementById('welcome-message'),
+        'pedidos-pagos': document.getElementById('pedidos-pagos-module') // <-- nuevo
     };
+
 
     // --- Elementos del módulo Pedidos ---
     const crearPedidoBtn = document.getElementById('crear-pedido-btn');
@@ -104,22 +107,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- NAVEGACIÓN / UI
-    navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
+navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+        const moduleId = link.dataset.module; // Primero verificamos si es un enlace de módulo
+
+        // Si SÍ tiene un 'data-module', manejamos todo con JavaScript
+        if (moduleId) {
+            e.preventDefault(); // <-- AHORA SÓLO SE EJECUTA AQUÍ
+
             navLinks.forEach(l => l.classList.remove('active'));
             link.classList.add('active');
-            const moduleId = link.dataset.module;
-            if (moduleId) {
-                showModule(moduleId);
-                if (moduleId === 'menu') loadMenuModule();
-                if (moduleId === 'pedidos') loadPedidosModule();
-                if (moduleId === 'mesas') loadMesasModule();
-            } else {
-                showModule('welcome');
-            }
-        });
+
+            showModule(moduleId);
+            if (moduleId === 'menu') loadMenuModule();
+            if (moduleId === 'pedidos') loadPedidosModule();
+            if (moduleId === 'mesas') loadMesasModule();
+        }
+        // Si NO tiene 'data-module' (como tu enlace de estadísticas),
+        // este código no hace nada y el navegador sigue el 'href' normalmente.
     });
+});
+    
 
     moduleCards.forEach(card => {
         card.addEventListener('click', () => {
@@ -130,6 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (moduleId === 'menu') loadMenuModule();
             if (moduleId === 'pedidos') loadPedidosModule();
             if (moduleId === 'mesas') loadMesasModule();
+            if (moduleId === 'reportes') loadReportesModule();
         });
     });
 
@@ -171,74 +180,77 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // --- MÓDULO MENÚ: Crear / Editar / Eliminar ---
-    function openProductoModal(producto = null) {
-        const modal = document.getElementById("modal-producto");
-        const titulo = document.getElementById("modal-producto-titulo");
-        const idInput = document.getElementById("producto-id");
-        const nombreInput = document.getElementById("producto-nombre");
-        const categoriaInput = document.getElementById("producto-categoria");
-        const precioInput = document.getElementById("producto-precio");
-        const form = document.getElementById("producto-form");
+function openProductoModal(producto = null) {
+    const modal = document.getElementById("modal-producto");
+    const titulo = document.getElementById("modal-producto-titulo");
+    const form = document.getElementById("producto-form");
+    const idInput = document.getElementById("producto-id");
+    const nombreInput = document.getElementById("producto-nombre");
+    const categoriaInput = document.getElementById("producto-categoria");
+    const precioInput = document.getElementById("producto-precio");
+    const descripcionInput = document.getElementById("producto-descripcion");
 
-        if (producto) {
-            titulo.textContent = "Editar Producto";
-            idInput.value = producto.id;
-            nombreInput.value = producto.nombre;
-            categoriaInput.value = producto.categoria;
-            precioInput.value = producto.precio;
-        } else {
-            titulo.textContent = "Nuevo Producto";
-            idInput.value = "";
-            nombreInput.value = "";
-            categoriaInput.value = "";
-            precioInput.value = "";
-        }
-
-        //  Limpia cualquier handler anterior y asegura que solo haya uno
-        form.onsubmit = async (e) => {
-            e.preventDefault();
-            await handleSaveProducto(e);
-        };
-
-        modal.classList.remove("hidden");
+    if (producto) {
+        titulo.textContent = "Editar Producto";
+        idInput.value = producto.id;
+        nombreInput.value = producto.nombre;
+        categoriaInput.value = producto.categoria;
+        precioInput.value = producto.precio;
+        descripcionInput.value = producto.descripcion || '';
+    } else {
+        titulo.textContent = "Nuevo Producto";
+        form.reset(); // Limpia todos los campos del formulario
+        idInput.value = ""; // Asegura que el id esté vacío para un producto nuevo
     }
 
+    modal.classList.remove("hidden");
+}
 
-    async function handleSaveProducto(e) {
-        e.preventDefault();
-        const id = document.getElementById("producto-id").value;
-        const nombre = document.getElementById("producto-nombre").value;
-        const categoria = document.getElementById("producto-categoria").value;
-        const precio = parseFloat(document.getElementById("producto-precio").value);
+const productoForm = document.getElementById("producto-form");
 
-        const data = { nombre, categoria, precio };
+// ✅ Verificamos si el listener ya fue añadido antes de continuar
+if (productoForm && !productoForm.dataset.listenerAttached) {
+    
+    // Asignamos el listener directamente (es más limpio)
+    productoForm.addEventListener("submit", handleSaveProducto);
+    
+    // Marcamos el formulario para que este bloque no se vuelva a ejecutar
+    productoForm.dataset.listenerAttached = "true";
+}
 
-        try {
-            let res;
-            if (id) {
-                res = await fetch(`/api/menu/${id}`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(data),
-                });
-            } else {
-                res = await fetch(`/api/menu`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(data),
-                });
-            }
 
-            if (!res.ok) throw new Error("Error al guardar producto");
+async function handleSaveProducto(e) {
+    e.preventDefault();
 
-            alert("✅ Producto guardado correctamente");
-            document.getElementById("modal-producto").classList.add("hidden");
-            loadMenuModule();
-        } catch (err) {
-            alert("⚠ " + err.message);
+    // 1. Obtenemos los datos del formulario
+    const formData = new FormData(document.getElementById('producto-form'));
+    const id = formData.get("id"); // Asume que tu input tiene name="id"
+
+    try {
+        const url = id ? `/api/menu/${id}` : "/api/menu";
+        const method = id ? "PUT" : "POST";
+
+        // 2. Hacemos UNA SOLA petición fetch
+        const response = await fetch(url, {
+            method: method,
+            body: formData, // El body es el FormData
+            // NO establezcas el header 'Content-Type', el navegador lo hace solo.
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || "Error al guardar el producto");
         }
-    }
 
+        alert("✅ Producto guardado correctamente");
+        document.getElementById("modal-producto").classList.add("hidden");
+        loadMenuModule(); // Recarga la lista de productos
+
+    } catch (err) {
+        console.error("Error en handleSaveProducto:", err);
+        alert("⚠️ " + err.message);
+    }
+}
     async function handleDeleteProducto(id) {
         if (!confirm("¿Seguro que quieres eliminar este producto?")) return;
         try {
@@ -252,31 +264,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- MÓDULO PEDIDOS
-    async function loadPedidosModule() {
-        if (!tablaPedidosContainer) return;
-        try {
-            const pedidos = await fetchJson('/api/pedidos');
-            let html = `<table><thead><tr><th>ID</th><th>Cliente</th><th>Descripción</th><th>Total</th><th>Fecha</th><th>Acciones</th></tr></thead><tbody>`;
-            pedidos.forEach(p => {
-                const fechaFormateada = new Date(p.fecha).toLocaleString();
-                const total = (typeof p.total === 'number') ? p.total.toFixed(2) : p.total;
-                html += `
-                    <tr>
-                        <td>${p.id}</td>
-                        <td>${escapeHtml(p.cliente || 'Consumidor Final')}</td>
-                        <td>${escapeHtml(p.descripcion || 'Sin descripción')}</td>
-                        <td>$${total}</td>
-                        <td>${fechaFormateada}</td>
-                        <td><button class="btn btn-delete" data-id="${p.id}">Eliminar</button></td>
-                    </tr>`;
-            });
-            html += `</tbody></table>`;
-            tablaPedidosContainer.innerHTML = html;
-        } catch (error) {
-            console.error('Error en loadPedidosModule:', error);
-            tablaPedidosContainer.innerHTML = `<p>Error al cargar los pedidos.</p>`;
-        }
+async function loadPedidosModule() {
+    if (!tablaPedidosContainer) return;
+    try {
+        const pedidos = await fetchJson('/api/pedidos');
+        let html = `<table><thead><tr><th>ID</th><th>Cliente</th><th>Descripción</th><th>Total</th><th>Fecha</th><th>Acciones</th></tr></thead><tbody>`;
+
+        pedidos.forEach(p => {
+            const total = (typeof p.total === 'number') ? p.total.toFixed(2) : p.total;
+            html += `
+                <tr>
+                    <td>${p.id}</td>
+                    <td>${escapeHtml(p.cliente || 'Consumidor Final')}</td>
+                    <td>${escapeHtml(p.descripcion || 'Sin descripción')}</td>
+                    <td>$${total}</td>
+                    
+                    <td>${p.fecha}</td>
+                    <td><button class="btn btn-delete" data-id="${p.id}">Eliminar</button></td>
+                </tr>`;
+        });
+
+        html += `</tbody></table>`;
+        tablaPedidosContainer.innerHTML = html;
+
+    } catch (error) {
+        console.error('Error en loadPedidosModule:', error);
+        tablaPedidosContainer.innerHTML = `<p>Error al cargar los pedidos.</p>`;
     }
+}
 
     // Abre modal nuevo pedido y carga menú para seleccionar productos
     async function openNuevoPedidoModal() {
@@ -879,19 +894,27 @@ if (cerrarModalProducto) {
 }
 
 // Delegación eventos de editar/eliminar
-if (tablaMenuContainer) {
+if (tablaMenuContainer && !tablaMenuContainer.dataset.listenerAttached) {
+
     tablaMenuContainer.addEventListener("click", (e) => {
+        // Lógica para el botón de editar
         if (e.target.classList.contains("btn-edit")) {
             const id = e.target.dataset.id;
             const producto = menuItems.find(p => p.id == id);
-            openProductoModal(producto);
+            if (producto) {
+                openProductoModal(producto);
+            }
         }
+
+        // Lógica para el botón de eliminar
         if (e.target.classList.contains("btn-delete")) {
             handleDeleteProducto(e.target.dataset.id);
         }
     });
-}
 
+    // Marcamos el contenedor para que este bloque no se vuelva a ejecutar
+    tablaMenuContainer.dataset.listenerAttached = "true";
+}
     
     // Funciones de facturación
     async function cargarPedidosParaFactura() {
@@ -1198,4 +1221,364 @@ if (tablaMenuContainer) {
         ventanaImpresion.document.close();
     }
     
+    
+    // --- NUEVO PANEL "Pedidos y Pagos" ---
+    const goPedidosBtn = document.getElementById('go-pedidos-btn');
+    const goFacturacionBtn = document.getElementById('go-facturacion-btn');
+    const backWelcomeBtn = document.getElementById('back-welcome-btn');
+
+    if (goPedidosBtn) {
+        goPedidosBtn.addEventListener('click', () => {
+            showModule('pedidos');
+            loadPedidosModule(); // usa la función que ya existe
+        });
+    }
+
+    if (goFacturacionBtn) {
+        goFacturacionBtn.addEventListener('click', () => {
+            showModule('facturacion');
+        });
+    }
+
+    if (backWelcomeBtn) {
+        backWelcomeBtn.addEventListener('click', () => {
+            showModule('welcome');
+        });
+    }
+
+    // --- MÓDULO REPORTES ---
+    const generarFacturaDiariaBtn = document.getElementById('generar-factura-diaria-btn');
+    const generarReporteMensualBtn = document.getElementById('generar-reporte-mensual-btn');
+    const modalFacturaDiaria = document.getElementById('modal-factura-diaria');
+    const modalReporteMensual = document.getElementById('modal-reporte-mensual');
+    const cerrarModalFacturaDiaria = document.getElementById('cerrar-modal-factura-diaria');
+    const cerrarModalReporteMensual = document.getElementById('cerrar-modal-reporte-mensual');
+    const imprimirFacturaDiariaBtn = document.getElementById('imprimir-factura-diaria-btn');
+    const imprimirReporteMensualBtn = document.getElementById('imprimir-reporte-mensual-btn');
+
+    // Función para cargar datos de reportes
+    async function loadReportesModule() {
+        try {
+            // Cargar datos diarios
+            const responseDiarios = await fetchJson('/api/reportes/diarios');
+            document.getElementById('pedidos-hoy').textContent = responseDiarios.pedidos_hoy;
+            document.getElementById('ingresos-hoy').textContent = `$${responseDiarios.ingresos_hoy.toFixed(2)}`;
+
+            // Cargar datos mensuales
+            const responseMensuales = await fetchJson('/api/reportes/mensuales');
+            document.getElementById('pedidos-mes').textContent = responseMensuales.pedidos_mes;
+            document.getElementById('ingresos-mes').textContent = `$${responseMensuales.ingresos_mes.toFixed(2)}`;
+        } catch (error) {
+            console.error('Error cargando reportes:', error);
+            alert('Error al cargar los datos de reportes');
+        }
+    }
+
+    // Generar factura diaria
+    if (generarFacturaDiariaBtn) {
+        generarFacturaDiariaBtn.addEventListener('click', async () => {
+            try {
+                const facturaData = await fetchJson('/api/reportes/factura-diaria');
+                mostrarFacturaDiaria(facturaData);
+            } catch (error) {
+                console.error('Error generando factura diaria:', error);
+                alert('Error al generar la factura diaria');
+            }
+        });
+    }
+
+    // Generar reporte mensual
+    if (generarReporteMensualBtn) {
+        generarReporteMensualBtn.addEventListener('click', async () => {
+            try {
+                const reporteData = await fetchJson('/api/reportes/reporte-mensual');
+                mostrarReporteMensual(reporteData);
+            } catch (error) {
+                console.error('Error generando reporte mensual:', error);
+                alert('Error al generar el reporte mensual');
+            }
+        });
+    }
+
+    // Función para mostrar factura diaria
+    function mostrarFacturaDiaria(data) {
+        const fechaElement = document.getElementById('fecha-factura-diaria');
+        const contentElement = document.getElementById('factura-diaria-content');
+        
+        fechaElement.textContent = data.fecha;
+        
+        let productosHTML = '';
+        if (data.productos_vendidos.length > 0) {
+            productosHTML = `
+                <div class="factura-section">
+                    <h4>Productos Vendidos</h4>
+                    <table class="factura-table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Ingresos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.productos_vendidos.map(p => `
+                                <tr>
+                                    <td>${p.nombre}</td>
+                                    <td>${p.cantidad}</td>
+                                    <td>$${p.ingresos.toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        let facturasHTML = '';
+        if (data.facturas.length > 0) {
+            facturasHTML = `
+                <div class="factura-section">
+                    <h4>Facturas del Día</h4>
+                    <table class="factura-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Total</th>
+                                <th>Método</th>
+                                <th>Hora</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.facturas.map(f => `
+                                <tr>
+                                    <td>#${f.id}</td>
+                                    <td>${f.cliente}</td>
+                                    <td>$${f.total.toFixed(2)}</td>
+                                    <td>${f.metodo_pago}</td>
+                                    <td>${f.hora}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        contentElement.innerHTML = `
+            <div class="factura-header-info">
+                <h2>Café Terraza</h2>
+                <p>Factura Diaria</p>
+                <p>Fecha: ${data.fecha}</p>
+            </div>
+            
+            <div class="factura-resumen">
+                <div class="factura-resumen-item">
+                    <span>Total Pedidos:</span>
+                    <span>${data.total_pedidos}</span>
+                </div>
+                <div class="factura-resumen-item">
+                    <span>Total Ingresos:</span>
+                    <span>$${data.total_ingresos.toFixed(2)}</span>
+                </div>
+            </div>
+            
+            ${productosHTML}
+            ${facturasHTML}
+        `;
+
+        modalFacturaDiaria.classList.remove('hidden');
+    }
+
+    // Función para mostrar reporte mensual
+    function mostrarReporteMensual(data) {
+        const mesElement = document.getElementById('mes-reporte');
+        const contentElement = document.getElementById('reporte-mensual-content');
+        
+        const meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        mesElement.textContent = `${meses[data.mes]} ${data.año}`;
+        
+        let productosHTML = '';
+        if (data.productos_mas_vendidos.length > 0) {
+            productosHTML = `
+                <div class="factura-section">
+                    <h4>Productos Más Vendidos</h4>
+                    <table class="factura-table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Ingresos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.productos_mas_vendidos.map(p => `
+                                <tr>
+                                    <td>${p.nombre}</td>
+                                    <td>${p.cantidad}</td>
+                                    <td>$${p.ingresos.toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        let mejoresDiasHTML = '';
+        if (data.mejores_dias.length > 0) {
+            mejoresDiasHTML = `
+                <div class="factura-section">
+                    <h4>Días con Mayores Ventas</h4>
+                    <table class="factura-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Ingresos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.mejores_dias.map(d => `
+                                <tr>
+                                    <td>${d.fecha}</td>
+                                    <td>$${d.ingresos.toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        let metodosHTML = '';
+        if (data.metodos_pago.length > 0) {
+            metodosHTML = `
+                <div class="factura-section">
+                    <h4>Métodos de Pago</h4>
+                    <table class="factura-table">
+                        <thead>
+                            <tr>
+                                <th>Método</th>
+                                <th>Cantidad</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.metodos_pago.map(m => `
+                                <tr>
+                                    <td>${m.metodo}</td>
+                                    <td>${m.cantidad}</td>
+                                    <td>$${m.total.toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        contentElement.innerHTML = `
+            <div class="factura-header-info">
+                <h2>Café Terraza</h2>
+                <p>Reporte Mensual</p>
+                <p>Período: ${meses[data.mes]} ${data.año}</p>
+            </div>
+            
+            <div class="factura-resumen">
+                <div class="factura-resumen-item">
+                    <span>Total Pedidos:</span>
+                    <span>${data.total_pedidos}</span>
+                </div>
+                <div class="factura-resumen-item">
+                    <span>Total Ingresos:</span>
+                    <span>$${data.total_ingresos.toFixed(2)}</span>
+                </div>
+                <div class="factura-resumen-item">
+                    <span>Promedio Diario:</span>
+                    <span>$${data.promedio_diario.toFixed(2)}</span>
+                </div>
+            </div>
+            
+            ${productosHTML}
+            ${mejoresDiasHTML}
+            ${metodosHTML}
+        `;
+
+        modalReporteMensual.classList.remove('hidden');
+    }
+
+    // Cerrar modales
+    if (cerrarModalFacturaDiaria) {
+        cerrarModalFacturaDiaria.addEventListener('click', () => {
+            modalFacturaDiaria.classList.add('hidden');
+        });
+    }
+
+    if (cerrarModalReporteMensual) {
+        cerrarModalReporteMensual.addEventListener('click', () => {
+            modalReporteMensual.classList.add('hidden');
+        });
+    }
+
+    // Imprimir facturas
+    if (imprimirFacturaDiariaBtn) {
+        imprimirFacturaDiariaBtn.addEventListener('click', () => {
+            imprimirFactura('factura-diaria-content', 'Factura Diaria');
+        });
+    }
+
+    if (imprimirReporteMensualBtn) {
+        imprimirReporteMensualBtn.addEventListener('click', () => {
+            imprimirFactura('reporte-mensual-content', 'Reporte Mensual');
+        });
+    }
+
+    // Función para imprimir facturas
+    function imprimirFactura(contentId, titulo) {
+        const content = document.getElementById(contentId).innerHTML;
+        const ventanaImpresion = window.open('', '_blank', 'width=800,height=600');
+        
+        ventanaImpresion.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>${titulo} - Café Terraza</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; }
+                    .factura-header-info { text-align: center; margin-bottom: 30px; }
+                    .factura-header-info h2 { color: #7a4f32; margin-bottom: 10px; }
+                    .factura-resumen { background: #f7efe6; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+                    .factura-resumen-item { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; }
+                    .factura-section { margin-bottom: 25px; }
+                    .factura-section h4 { color: #7a4f32; margin-bottom: 15px; }
+                    .factura-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+                    .factura-table th, .factura-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    .factura-table th { background-color: #f7efe6; font-weight: bold; }
+                    .factura-thanks { text-align: center; margin-top: 30px; font-style: italic; color: #7a4f32; }
+                    @media print { body { margin: 0; } }
+                </style>
+            </head>
+            <body>
+                ${content}
+                
+                <div class="factura-thanks">
+                    Reporte generado automáticamente por Café Terraza
+                </div>
+                
+                <script>
+                    window.onload = function() {
+                        window.print();
+                        window.onafterprint = function() {
+                            window.close();
+                        };
+                    };
+                </script>
+            </body>
+            </html>
+        `);
+        
+        ventanaImpresion.document.close();
+    }
+
 });
